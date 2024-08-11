@@ -1,0 +1,20 @@
+{
+  "name": "SpiritData",
+  "short_name": "SpiritData",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "description": "An app by Two Faces Paranormal for detecting and visualizing spirit activity.",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
