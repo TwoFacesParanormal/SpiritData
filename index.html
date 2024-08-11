@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SpiritData</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <style>
+  #logo {
+      position: fixed;
+      top: 15px;
+      left: 10px;
+      width: 80px;
+      height: auto;
+      z-index: 1000;
+      transition: width 0.3s ease;
+      cursor: pointer;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    @media (orientation: portrait) {
+      canvas {
+        transform: scaleX(3); /* Stretch the portrait video horizontally */
+      }
+    }
+    #controlPopup {
+      display: none; 
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: black;
+      color: white;
+      border: 2px solid white;
+      padding: 20px;
+      z-index: 1000;
+      text-align: center;
+      width: 300px;
+      height: 300px; /* Adjust height to fit content */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center; /* Center content horizontally */
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
+    #logo {
+      position: absolute;
+      top: 15px;
+      left: 10px;
+      width: 80px;
+      height: auto;
+      z-index: 1000;
+      transition: width 0.3s ease;
+      cursor: pointer;
+    }
+    #controlPopup button {
+      border: none;
+      background-color: transparent;
+      font-size: 30px;
+      cursor: pointer;
+      margin: 5px;
+      color: #fff;
+    }
+    #closePopup {
+      position: absolute;
+      top: 5px; 
+      right: 5px; 
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      font-size: 30px;
+      color: #fff;
+    }
+    /* Specific styles for Safari */
+    @supports (-webkit-touch-callout: none) {
+      #closePopup {
+        top: 5px; 
+        right: -5px;
+        left: auto;
+      }
+    }
+    #captions {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 14px;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 5px;
+      border-radius: 5px;
+      max-width: 80%;
+      word-wrap: break-word;
+      overflow: hidden;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    #confidenceLevel {
+      position: fixed;
+      top: 10px; /* Position relative to the top of the viewport */
+      right: 10px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+      z-index: 500; /* Lower z-index to ensure it is covered by the popup */
+      background-color: rgba(0, 0, 0, 0.5); /* Background to ensure visibility */
+      padding: 5px;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    #confidenceSlider, #gainSlider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%; /* Full width of parent container */
+      height: 40px; /* Increase the size of the sliders */
+      background: #ddd;
+      outline: none;
+      opacity: 0.7;
+      transition: opacity .2s;
+      margin-bottom: 20px; /* Add margin to separate elements */
+    }
+    #confidenceSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 40px; /* Increase the size of the slider handle */
+      height: 40px;
+      background: #ff6600; /* Updated color */
+      cursor: pointer;
+    }
+    #gainSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 40px; /* Increase the size of the slider handle */
+      height: 40px;
+      background: #4CAF50; /* Green handle */
+      cursor: pointer;
+    }
+    #confidenceSlider::-moz-range-thumb {
+      width: 40px; /* Increase the size of the slider handle */
+      height: 40px;
+      background: #ff6600; /* Updated color */
+      cursor: pointer;
+    }
+    #gainSlider::-moz-range-thumb {
+      width: 40px; /* Increase the size of the slider handle */
+      height: 40px;
+      background: #4CAF50; /* Green handle */
+      cursor: pointer;
+    }
+    .slider-title {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    #audioLevel {
+      width: 100%; /* Full width of parent container */
+      height: 20px;
+      background-color: grey;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    #audioLevelIndicator {
+      height: 100%;
+      background-color: green;
+      width: 0;
+      transition: width 0.1s;
+    }
+    #peakLine {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background-color: yellow;
+    }
+  </style>
+  <!-- Load Local Files -->
+  <script src="p5.min.js"></script>
+  <script src="p5.dom.min.js"></script>
+  <script src="ml5.min.js"></script>
+  <script>
+  window.addEventListener('orientationchange', function() {
+    location.reload();
+  });
+
+  function setup() {
+    let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.position(0, 0);
+
+    setupCamera();
+
+    const confidenceDisplay = select('#confidenceLevel');
+    confidenceDisplay.mousePressed(toggleControlPopup);
+
+    const switchButton = select('#switchCamera');
+    switchButton.mousePressed(switchCamera);
+
+    const toggleCaptionsButton = select('#toggleCaptions');
+    toggleCaptionsButton.mousePressed(toggleCaptions);
+
+    const confidenceSlider = select('#confidenceSlider');
+    confidenceSlider.input(updateSliderValue);
+
+    const gainSlider = select('#gainSlider');
+    gainSlider.attribute('min', 0.1); // Ensure minimum value is 0.1
+    gainSlider.attribute('max', 10); // Set the maximum value of the gain slider to 10
+    gainSlider.value(gainValue); // Set the default value to 4
+    gainSlider.input(updateGainValue);
+
+    const confirmPopupButton = select('#confirmPopup');
+    confirmPopupButton.mousePressed(confirmPopup);
+
+    const closePopupButton = select('#closePopup');
+    closePopupButton.mousePressed(hideControlPopup);
+
+    captionsDiv = select('#captions');
+    captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
+
+    // Load settings from local storage
+    loadSettings();
+
+    // Enable text recognition by default
+    startSpeechRecognition();
+
+    // Hide the control popup initially
+    hideControlPopup();
+
+    // Adjust canvas for orientation
+    adjustCanvasForOrientation();
+  }
+
+  function adjustCanvasForOrientation() {
+    if (window.innerHeight > window.innerWidth) {
+      document.querySelector('canvas').style.transform = 'scaleX(2)';
+    } else {
+      document.querySelector('canvas').style.transform = 'scaleX(1)';
+    }
+  }
+
+  window.addEventListener('resize', adjustCanvasForOrientation);
+</script>
+
+</head>
+<body>
+  <a href="https://twofacesparanormal.com/">
+    <img id="logo" src="icons/logo.png" alt="Logo">
+  </a>
+  <div id="controlPopup">
+    <button id="closePopup">✖</button>
+    <div>
+      <button id="switchCamera">🔄</button>
+      <button id="toggleCaptions">💬</button>
+    </div>
+    <div class="slider-title">Human Figure Probability: <span id="popupConfidenceLevel">90%</span></div>
+    <input type="range" id="confidenceSlider" min="50" max="100" value="90" step="1">
+    <div class="slider-title">Microphone Sensitivity: <span id="popupGainLevel">4.0</span></div>
+    <div id="audioLevel">
+      <div id="audioLevelIndicator"></div>
+      <div id="peakLine"></div>
+    </div>
+    <input type="range" id="gainSlider" min="0.1" max="10.0" step="0.1" value="4.0">
+    <button id="confirmPopup">Save</button>
+  </div>
+  <div id="captions"></div>
+  <div id="confidenceLevel">90%</div>
+  <script src="sketch.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
