@@ -73,8 +73,8 @@ function setupCamera() {
     constraints = {
       video: {
         facingMode: usingFrontCamera ? 'user' : 'environment',
-        width: { ideal: windowWidth * 3 },
-        height: { ideal: windowHeight }
+        width: { ideal: windowWidth * 2 },
+        height: { ideal: windowHeight * 2}
       },
       audio: false
     };
@@ -85,7 +85,7 @@ function setupCamera() {
         width: { ideal: windowWidth },
         height: { ideal: windowHeight }
       },
-      audio: true
+      audio: false
     };
   }
   
