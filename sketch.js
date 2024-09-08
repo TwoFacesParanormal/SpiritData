@@ -67,30 +67,23 @@ function setupCamera() {
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
   }
+  let pw = windowWidth;
   if (window.innerHeight > window.innerWidth) {
+    pw = windowWidth * 3;
+  }
+
   let constraints = {
     video: {
       facingMode: usingFrontCamera ? 'user' : 'environment',
-      width: { ideal: windowWidth * 3 },
-      height: { ideal: windowHeight }
-    },
-    audio: false
-  };
-} else {
-  let constraints = {
-    video: {
-      facingMode: usingFrontCamera ? 'user' : 'environment',
-      width: { ideal: windowWidth },
+      width: { ideal: pw },
       height: { ideal: windowHeight }
     },
     audio: true
   };
-}
-    
 
   video = createCapture(constraints, function(stream) {
     currentStream = stream;
-    video.size(windowWidth, windowHeight);
+    video.size(pw, windowHeight);
     video.hide();
 
     poseNet = ml5.poseNet(video, modelReady);
