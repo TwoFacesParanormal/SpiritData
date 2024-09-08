@@ -94,6 +94,14 @@ function setupCamera() {
       poseHistory.push({poses: results, timestamp: millis()});
       poseHistory = poseHistory.filter(entry => millis() - entry.timestamp <= 2000);
     });
+      // Append the video element to the container
+  document.getElementById('videoContainer').appendChild(video.elt);
+
+  // Style the video element
+  video.elt.style.objectFit = 'none';
+  video.elt.style.position = 'absolute';
+  video.elt.style.left = '0';
+  video.elt.style.top = '0';
   });
 
   video.elt.setAttribute('playsinline', 'true');
@@ -161,7 +169,7 @@ function drawKeypoints() {
           } else {
             fill(255, 0, 0);
             noStroke();
-            ellipse(x, y, 10, 10);
+            ellipse(x, y, 5, 5);
           }
         }
       }
