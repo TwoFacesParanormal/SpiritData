@@ -71,7 +71,7 @@ function setupCamera() {
   let ph = windowHeight;
   if (window.innerHeight > window.innerWidth) {
     pw = windowWidth*3;
-    ph = windowHeight;
+    ph = windowHeight*3;
   }
 
   let constraints = {
