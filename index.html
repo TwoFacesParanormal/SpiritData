@@ -27,11 +27,6 @@
       transition: transform 0.3s ease;
     }
 
-    @media (orientation: portrait) {
-      video {
-        transform: scaleX(2); /* Stretch the portrait video horizontally */
-      }
-    }
     #controlPopup {
       display: none; 
       position: absolute;
@@ -253,6 +248,17 @@
 
     // Hide the control popup initially
     hideControlPopup();
+
+    // Adjust canvas for orientation
+    adjustCanvasForOrientation();
+  }
+
+  function adjustCanvasForOrientation() {
+    if (window.innerHeight > window.innerWidth) {
+      document.querySelector('canvas').style.transform = 'scaleX(2)';
+    } else {
+      document.querySelector('canvas').style.transform = 'scaleX(1)';
+    }
   }
 
 </script>
