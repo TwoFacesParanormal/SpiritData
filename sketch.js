@@ -70,7 +70,7 @@ function setupCamera() {
   let pw = windowWidth;
   let ph = windowHeight;
   if (window.innerHeight > window.innerWidth) {
-    pw = windowWidth * 3;
+    pw = windowWidth * 6;
     ph = windowHeight * 3;
   }
 
