@@ -70,20 +70,21 @@ function setupCamera() {
   let pw = windowWidth;
   if (window.innerHeight > window.innerWidth) {
     pw = windowWidth * 3;
+    ph = windowHeight * 3;
   }
 
   let constraints = {
     video: {
       facingMode: usingFrontCamera ? 'user' : 'environment',
       width: { ideal: pw },
-      height: { ideal: windowHeight }
+      height: { ideal: ph }
     },
-    audio: true
+    audio: false
   };
 
   video = createCapture(constraints, function(stream) {
     currentStream = stream;
-    video.size(pw, windowHeight);
+    video.size(pw, ph);
     video.hide();
 
     poseNet = ml5.poseNet(video, modelReady);
