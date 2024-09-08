@@ -150,7 +150,9 @@ function draw() {
   // Draw keypoints and skeletons
   drawKeypoints(x, y, videoWidth, videoHeight);
   drawSkeletons(x, y, videoWidth, videoHeight);
-  updateVuMeter();
+  if (isVuMeterVisible()) {
+    updateVuMeter();
+  }
 }
 
 function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
@@ -200,6 +202,11 @@ function drawSkeletons() {
       }
     }
   }
+}
+
+function isVuMeterVisible() {
+  const controlPopup = document.getElementById('controlPopup');
+  return controlPopup.style.display !== 'none';
 }
 
 function getBaseColor(index) {
