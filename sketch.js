@@ -134,18 +134,27 @@ function draw() {
   let videoWidth, videoHeight;
 
   if (canvasAspect > videoAspect) {
+    // Canvas is wider than video aspect ratio
     videoWidth = height * videoAspect;
     videoHeight = height;
   } else {
+    // Canvas is taller than video aspect ratio
     videoWidth = width;
     videoHeight = width / videoAspect;
+  }
+
+  // Adjust for portrait mode
+  if (window.innerHeight > window.innerWidth) {
+    videoWidth = videoHeight * videoAspect * 3; // Stretch horizontally
   }
 
   let x = (width - videoWidth) / 2;
   let y = (height - videoHeight) / 2;
 
+  // Draw the video on the canvas
   image(video, x, y, videoWidth, videoHeight);
 
+  // Draw keypoints and skeletons
   drawKeypoints();
   drawSkeletons();
   updateVuMeter();
