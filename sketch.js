@@ -68,6 +68,7 @@ function setupCamera() {
     currentStream.getTracks().forEach(track => track.stop());
   }
   let pw = windowWidth;
+  let ph = windowHeight;
   if (window.innerHeight > window.innerWidth) {
     pw = windowWidth * 3;
     ph = windowHeight * 3;
