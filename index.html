@@ -15,7 +15,6 @@
       transition: width 0.3s ease;
       cursor: pointer;
     }
-
     canvas {
       display: block;
       position: absolute;
@@ -25,12 +24,6 @@
       height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
-    }
-
-    @media (orientation: portrait) {
-      canvas {
-        transform: scaleX(3); /* Stretch the portrait video horizontally */
-      }
     }
     #controlPopup {
       display: none; 
@@ -244,19 +237,10 @@
 
     captionsDiv = select('#captions');
     captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
-
-    // Load settings from local storage
     loadSettings();
-
-    // Enable text recognition by default
     startSpeechRecognition();
-
-    // Hide the control popup initially
     hideControlPopup();
-
   }
-
-
 </script>
 
 </head>

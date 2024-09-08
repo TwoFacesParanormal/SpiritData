@@ -68,6 +68,16 @@ function setupCamera() {
     currentStream.getTracks().forEach(track => track.stop());
   }
 
+  if (window.innerHeight > window.innerWidth) {
+    let constraints = {
+      video: {
+        facingMode: usingFrontCamera ? 'user' : 'environment',
+        width: { ideal: windowWidth * 3 },
+        height: { ideal: windowHeight }
+      },
+      audio: false
+    };
+  }else{
   let constraints = {
     video: {
       facingMode: usingFrontCamera ? 'user' : 'environment',
@@ -76,10 +86,15 @@ function setupCamera() {
     },
     audio: false
   };
+  }
 
   video = createCapture(constraints, function(stream) {
     currentStream = stream;
+    if (window.innerHeight > window.innerWidth) {
+    video.size(windowWidth * 3, windowHeight);
+    }else{
     video.size(windowWidth, windowHeight);
+    }
     video.hide();
 
     poseNet = ml5.poseNet(video, modelReady);
