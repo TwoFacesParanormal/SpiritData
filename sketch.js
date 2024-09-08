@@ -113,12 +113,7 @@ function setupCamera() {
   });
 
   video.elt.setAttribute('playsinline', 'true');
-  video.elt.style.objectFit = 'cover';
-  if (window.innerHeight > window.innerWidth) {
-    video.elt.style.objectFit = 'none';
-    video.elt.style.position = 'absolute';
-    video.elt.style.left = '0';
-  }
+
 }
 
 function switchCamera() {
