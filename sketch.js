@@ -137,6 +137,8 @@ function drawKeypoints() {
       for (let j = 0; j < pose.keypoints.length; j++) {
         const keypoint = pose.keypoints[j];
         if (keypoint.score > confidenceLevel) {          
+          let x = map(keypoint.position.x, 0, video.width, 0, width);
+          let y = map(keypoint.position.y, 0, video.height, 0, height);
           if (keypoint.part === 'leftEye' || keypoint.part === 'rightEye') {
             drawEye(x, y, ageFactor);
           } else
@@ -146,13 +148,11 @@ function drawKeypoints() {
           if (keypoint.part === 'leftEar' || keypoint.part === 'rightEar') {
             drawEar(x, y, ageFactor);
           } else {
-            let x = map(keypoint.position.x, 0, video.width, 0, width);
-            let y = map(keypoint.position.y, 0, video.height, 0, height);
             fill(255, 0, 0);
             noStroke();
             ellipse(x, y, 10, 10);
+          }
         }
-      }
       }
     }
   }
