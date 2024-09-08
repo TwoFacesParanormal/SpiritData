@@ -67,25 +67,31 @@ function setupCamera() {
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
   }
-  let pw = windowWidth;
-  let ph = windowHeight;
+  let constraints;
+
   if (window.innerHeight > window.innerWidth) {
-    pw = windowWidth*3;
-    ph = windowHeight*3;
+    constraints = {
+      video: {
+        facingMode: usingFrontCamera ? 'user' : 'environment',
+        width: { ideal: windowWidth * 3 },
+        height: { ideal: windowHeight }
+      },
+      audio: false
+    };
+  } else {
+    constraints = {
+      video: {
+        facingMode: usingFrontCamera ? 'user' : 'environment',
+        width: { ideal: windowWidth },
+        height: { ideal: windowHeight }
+      },
+      audio: true
+    };
   }
-
-  let constraints = {
-    video: {
-      facingMode: usingFrontCamera ? 'user' : 'environment',
-      width: { ideal: pw },
-      height: { ideal: ph }
-    },
-    audio: false
-  };
-
+  
   video = createCapture(constraints, function(stream) {
     currentStream = stream;
-    video.size(pw, ph);
+    video.size(windowWidth, windowHeight);
     video.hide();
 
     poseNet = ml5.poseNet(video, modelReady);
@@ -98,10 +104,12 @@ function setupCamera() {
   document.getElementById('videoContainer').appendChild(video.elt);
 
   // Style the video element
-  video.elt.style.objectFit = 'none';
+  video.elt.style.objectFit = 'cover';
   video.elt.style.position = 'absolute';
   video.elt.style.left = '0';
   video.elt.style.top = '0';
+  video.elt.style.width = '100%';
+  video.elt.style.height = '100%';
   });
 
   video.elt.setAttribute('playsinline', 'true');
