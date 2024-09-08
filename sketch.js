@@ -100,20 +100,20 @@ function setupCamera() {
       poseHistory.push({poses: results, timestamp: millis()});
       poseHistory = poseHistory.filter(entry => millis() - entry.timestamp <= 2000);
     });
-      // Append the video element to the container
-  document.getElementById('videoContainer').appendChild(video.elt);
 
-  // Style the video element
-  video.elt.style.objectFit = 'cover';
-  video.elt.style.position = 'absolute';
-  video.elt.style.left = '0';
-  video.elt.style.top = '0';
-  video.elt.style.width = '100%';
-  video.elt.style.height = '100%';
+    // Append the video element to the container
+    document.getElementById('videoContainer').appendChild(video.elt);
+
+    // Style the video element
+    video.elt.style.objectFit = 'cover';
+    video.elt.style.position = 'absolute';
+    video.elt.style.left = '0';
+    video.elt.style.top = '0';
+    video.elt.style.width = '100%';
+    video.elt.style.height = '100%';
   });
 
   video.elt.setAttribute('playsinline', 'true');
-
 }
 
 function switchCamera() {
