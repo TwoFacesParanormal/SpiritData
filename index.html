@@ -28,7 +28,7 @@
     }
 
     @media (orientation: portrait) {
-      canvas {
+      video {
         transform: scaleX(3); /* Stretch the portrait video horizontally */
       }
     }
@@ -253,20 +253,8 @@
 
     // Hide the control popup initially
     hideControlPopup();
-
-    // Adjust canvas for orientation
-    adjustCanvasForOrientation();
   }
 
-  function adjustCanvasForOrientation() {
-    if (window.innerHeight > window.innerWidth) {
-      document.querySelector('canvas').style.transform = 'scaleX(2)';
-    } else {
-      document.querySelector('canvas').style.transform = 'scaleX(1)';
-    }
-  }
-
-  window.addEventListener('resize', adjustCanvasForOrientation);
 </script>
 
 </head>
