@@ -148,21 +148,21 @@ function draw() {
   image(video, x, y, videoWidth, videoHeight);
 
   // Draw keypoints and skeletons
-  drawKeypoints();
-  drawSkeletons();
+  drawKeypoints(x, y, videoWidth, videoHeight);
+  drawSkeletons(x, y, videoWidth, videoHeight);
   updateVuMeter();
 }
 
-function drawKeypoints() {
+function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
   for (let historyEntry of poseHistory) {
     let ageFactor = (millis() - historyEntry.timestamp) / 2000;
     for (let i = 0; i < historyEntry.poses.length; i++) {
       const pose = historyEntry.poses[i].pose;
       for (let j = 0; j < pose.keypoints.length; j++) {
         const keypoint = pose.keypoints[j];
-        if (keypoint.score > confidenceLevel) {          
-          let x = map(keypoint.position.x, 0, video.width, 0, width);
-          let y = map(keypoint.position.y, 0, video.height, 0, height);
+        if (keypoint.score > confidenceLevel) {
+          let x = map(keypoint.position.x, 0, video.width, xOffset, xOffset + videoWidth);
+          let y = map(keypoint.position.y, 0, video.height, yOffset, yOffset + videoHeight);
           if (keypoint.part === 'leftEye' || keypoint.part === 'rightEye') {
             drawEye(x, y, ageFactor);
           } else
