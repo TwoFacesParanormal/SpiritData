@@ -70,8 +70,8 @@ function setupCamera() {
   let pw = windowWidth;
   let ph = windowHeight;
   if (window.innerHeight > window.innerWidth) {
-    pw = windowWidth * 6;
-    ph = windowHeight * 3;
+    pw = windowWidth*3;
+    ph = windowHeight;
   }
 
   let constraints = {
@@ -98,6 +98,11 @@ function setupCamera() {
 
   video.elt.setAttribute('playsinline', 'true');
   video.elt.style.objectFit = 'cover';
+  if (window.innerHeight > window.innerWidth) {
+    video.elt.style.objectFit = 'none';
+    video.elt.style.position = 'absolute';
+    video.elt.style.left = '0';
+  }
 }
 
 function switchCamera() {
