@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>SpiritData</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <style>
   #logo {
       position: fixed;
@@ -16,21 +16,22 @@
       cursor: pointer;
     }
     canvas {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    #videoContainer {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: relative;
-    }
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+#videoContainer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute; /* Ensures it covers the entire screen */
+  top: 0;
+  left: 0;
+}
     #controlPopup {
       display: none; 
       position: absolute;
@@ -206,49 +207,6 @@
   <script src="p5.min.js"></script>
   <script src="p5.dom.min.js"></script>
   <script src="ml5.min.js"></script>
-  <script>
-  window.addEventListener('orientationchange', function() {
-    location.reload();
-  });
-
-  function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight);
-    canvas.position(0, 0);
-
-    setupCamera();
-
-    const confidenceDisplay = select('#confidenceLevel');
-    confidenceDisplay.mousePressed(toggleControlPopup);
-
-    const switchButton = select('#switchCamera');
-    switchButton.mousePressed(switchCamera);
-
-    const toggleCaptionsButton = select('#toggleCaptions');
-    toggleCaptionsButton.mousePressed(toggleCaptions);
-
-    const confidenceSlider = select('#confidenceSlider');
-    confidenceSlider.input(updateSliderValue);
-
-    const gainSlider = select('#gainSlider');
-    gainSlider.attribute('min', 0.1); // Ensure minimum value is 0.1
-    gainSlider.attribute('max', 10); // Set the maximum value of the gain slider to 10
-    gainSlider.value(gainValue); // Set the default value to 4
-    gainSlider.input(updateGainValue);
-
-    const confirmPopupButton = select('#confirmPopup');
-    confirmPopupButton.mousePressed(confirmPopup);
-
-    const closePopupButton = select('#closePopup');
-    closePopupButton.mousePressed(hideControlPopup);
-
-    captionsDiv = select('#captions');
-    captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
-    loadSettings();
-    startSpeechRecognition();
-    hideControlPopup();
-  }
-</script>
-
 </head>
 <body>
   <div id="videoContainer">
@@ -272,7 +230,7 @@
     </div>
     <input type="range" id="gainSlider" min="0.1" max="10.0" step="0.1" value="4.0">
     <button id="confirmPopup">Save</button>
-    <small>v90u</small>
+    <small>v91a</small>
   </div>
   <div id="captions"></div>
   <div id="confidenceLevel">90%</div>
