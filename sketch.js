@@ -19,6 +19,14 @@ let peakValue = 0;
 let peakTimestamp = 0;
 
 let maxLines = 14; // Maximum number of lines to display
+<<<<<<< HEAD
+=======
+let videoWidth, videoHeight;
+let resizeTimeout;
+
+// Variables to handle rotated keypoints and skeletons
+let isPortrait = false;
+>>>>>>> 03a7d1e (91c)
 
 function setup() {
   pixelDensity(1);
@@ -55,8 +63,13 @@ function setup() {
   captionsDiv = select('#captions');
   captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
 
+  // Load settings from local storage
   loadSettings();
+
+  // Enable text recognition by default
   startSpeechRecognition();
+
+  // Hide the control popup initially
   hideControlPopup();
 }
 
@@ -68,7 +81,8 @@ function setupCamera() {
   let constraints;
 
   if (window.innerHeight > window.innerWidth) {
-    // Portrait mode: Higher height than width
+    // Portrait mode
+    isPortrait = true;
     constraints = {
       video: {
         facingMode: usingFrontCamera ? 'user' : 'environment',
@@ -78,7 +92,8 @@ function setupCamera() {
       audio: false
     };
   } else {
-    // Landscape mode: Higher width than height
+    // Landscape mode
+    isPortrait = false;
     constraints = {
       video: {
         facingMode: usingFrontCamera ? 'user' : 'environment',
@@ -108,7 +123,14 @@ function setupCamera() {
     });
 
     // Append the video element to the container
+<<<<<<< HEAD
     document.getElementById('videoContainer').appendChild(video.elt);
+=======
+    let videoContainer = document.getElementById('videoContainer');
+    if (videoContainer && !videoContainer.contains(video.elt)) {
+      videoContainer.appendChild(video.elt);
+    }
+>>>>>>> 03a7d1e (91c)
   });
 
   video.elt.setAttribute('playsinline', 'true');
@@ -116,7 +138,10 @@ function setupCamera() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  setupCamera();
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    setupCamera();
+  }, 300); // Delay to allow the orientation change to complete
 }
 
 window.addEventListener('orientationchange', function() {
@@ -142,9 +167,13 @@ function draw() {
   let videoAspect = video.width / video.height;
   let canvasAspect = width / height;
 
+<<<<<<< HEAD
   let videoWidth, videoHeight;
 
   if (window.innerHeight > window.innerWidth) {
+=======
+  if (isPortrait) {
+>>>>>>> 03a7d1e (91c)
     // Portrait Mode: Rotate the canvas
     push();
     translate(width / 2, height / 2);
@@ -202,8 +231,8 @@ function drawKeypointsRotated() {
           // Rotate keypoint positions by 90 degrees
           let rotatedX = keypoint.position.y;
           let rotatedY = video.width - keypoint.position.x;
-          
-          // Map to canvas coordinates
+
+          // Map to canvas coordinates after rotation
           rotatedX = map(rotatedX, 0, video.width, (height - videoHeight) / 2, (height + videoHeight) / 2);
           rotatedY = map(rotatedY, 0, video.height, (width - videoWidth) / 2, (width + videoWidth) / 2);
 
@@ -253,6 +282,7 @@ function drawSkeletonsRotated() {
   }
 }
 
+<<<<<<< HEAD
 function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
   for (let historyEntry of poseHistory) {
     let ageFactor = (millis() - historyEntry.timestamp) / 2000;
@@ -305,6 +335,11 @@ function drawSkeletons() {
 function isVuMeterVisible() {
   const controlPopup = document.getElementById('controlPopup');
   return controlPopup.style.display !== 'none';
+=======
+function isVuMeterVisible() {
+  const controlPopup = select('#controlPopup');
+  return controlPopup.style('display') !== 'none';
+>>>>>>> 03a7d1e (91c)
 }
 
 function getBaseColor(index) {
@@ -456,7 +491,12 @@ function updateCaptions() {
     lineElement.style('margin', '0');
     lineElement.style('padding', '0');
     lineElement.style('opacity', (1 - (opacityStep * (maxLines - index))).toFixed(2));
+<<<<<<< HEAD
     captionsDiv.child(lineElement);
+=======
+    lineElement.style('font-size', '14px');
+    lineElement.parent(captionsDiv);
+>>>>>>> 03a7d1e (91c)
   });
 
   captionsDiv.style('white-space', 'normal'); // Allow captions to wrap to multiple lines if needed
@@ -487,7 +527,11 @@ function confirmPopup() {
   confidenceLevel = slider.value() / 100;
   updateConfidenceLevel();
   saveSettings();
+<<<<<<< HEAD
   location.reload();  // Force refresh to clear any issues
+=======
+  // No need to reload the page; adjust pose history or other parameters if necessary
+>>>>>>> 03a7d1e (91c)
 }
 
 function updateConfidenceLevel() {
@@ -497,7 +541,11 @@ function updateConfidenceLevel() {
 
 function toggleControlPopup() {
   let controlPopup = select('#controlPopup');
+<<<<<<< HEAD
   if (controlPopup.style('display') === 'none') {
+=======
+  if (controlPopup.style('display') === 'none' || controlPopup.style('display') === '') {
+>>>>>>> 03a7d1e (91c)
     showControlPopup();
   } else {
     hideControlPopup();
@@ -572,4 +620,8 @@ function updateVuMeter() {
     peakLine.style('left', '0%');
     peakValue = 0;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 03a7d1e (91c)

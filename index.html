@@ -5,7 +5,43 @@
   <title>SpiritData</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <style>
+<<<<<<< HEAD
   #logo {
+=======
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    #videoContainer {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* object-fit: cover; */ /* Removed to prevent CSS scaling conflicts */
+      z-index: 2;
+    }
+
+    #logo {
+>>>>>>> 03a7d1e (91c)
       position: fixed;
       top: 15px;
       left: 10px;
@@ -15,6 +51,7 @@
       transition: width 0.3s ease;
       cursor: pointer;
     }
+<<<<<<< HEAD
     canvas {
   display: block;
   position: absolute;
@@ -32,25 +69,31 @@
   top: 0;
   left: 0;
 }
+=======
+
+>>>>>>> 03a7d1e (91c)
     #controlPopup {
       display: none; 
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: black;
+      background-color: rgba(0, 0, 0, 0.9);
       color: white;
       border: 2px solid white;
       padding: 20px;
-      z-index: 1000;
+      z-index: 1001;
       text-align: center;
       width: 300px;
-      height: 300px; /* Adjust height to fit content */
+      max-height: 80vh;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center; /* Center content horizontally */
+      border-radius: 10px;
     }
+<<<<<<< HEAD
     body {
       margin: 0;
       padding: 0;
@@ -73,6 +116,9 @@
       transition: width 0.3s ease;
       cursor: pointer;
     }
+=======
+
+>>>>>>> 03a7d1e (91c)
     #controlPopup button {
       border: none;
       background-color: transparent;
@@ -81,6 +127,7 @@
       margin: 5px;
       color: #fff;
     }
+
     #closePopup {
       position: absolute;
       top: 5px; 
@@ -91,6 +138,7 @@
       font-size: 30px;
       color: #fff;
     }
+
     /* Specific styles for Safari */
     @supports (-webkit-touch-callout: none) {
       #closePopup {
@@ -99,6 +147,7 @@
         left: auto;
       }
     }
+
     #captions {
       position: fixed;
       bottom: 10px;
@@ -108,14 +157,16 @@
       font-size: 14px;
       z-index: 1000;
       background-color: rgba(0, 0, 0, 0.5);
-      padding: 5px;
+      padding: 10px;
       border-radius: 5px;
-      max-width: 80%;
+      max-width: 90%;
       word-wrap: break-word;
       overflow: hidden;
       box-sizing: border-box;
       cursor: pointer;
+      pointer-events: auto;
     }
+
     #confidenceLevel {
       position: fixed;
       top: 10px; /* Position relative to the top of the viewport */
@@ -128,7 +179,9 @@
       padding: 5px;
       border-radius: 5px;
       box-sizing: border-box;
+      pointer-events: auto;
     }
+<<<<<<< HEAD
     canvas {
       display: block;
       position: absolute;
@@ -139,6 +192,9 @@
       object-fit: cover;
       transition: transform 0.3s ease;
     }
+=======
+
+>>>>>>> 03a7d1e (91c)
     #confidenceSlider, #gainSlider {
       -webkit-appearance: none;
       appearance: none;
@@ -150,6 +206,7 @@
       transition: opacity .2s;
       margin-bottom: 20px; /* Add margin to separate elements */
     }
+
     #confidenceSlider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -157,7 +214,9 @@
       height: 40px;
       background: #ff6600; /* Updated color */
       cursor: pointer;
+      border-radius: 50%;
     }
+
     #gainSlider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -165,42 +224,64 @@
       height: 40px;
       background: #4CAF50; /* Green handle */
       cursor: pointer;
+      border-radius: 50%;
     }
+
     #confidenceSlider::-moz-range-thumb {
       width: 40px; /* Increase the size of the slider handle */
       height: 40px;
       background: #ff6600; /* Updated color */
       cursor: pointer;
+      border: none;
+      border-radius: 50%;
     }
+
     #gainSlider::-moz-range-thumb {
       width: 40px; /* Increase the size of the slider handle */
       height: 40px;
       background: #4CAF50; /* Green handle */
       cursor: pointer;
+      border: none;
+      border-radius: 50%;
     }
+
     .slider-title {
       font-size: 16px;
       margin-bottom: 5px;
+      width: 100%;
+      text-align: left;
     }
+
     #audioLevel {
       width: 100%; /* Full width of parent container */
       height: 20px;
       background-color: grey;
       margin-bottom: 10px;
       position: relative;
+      border-radius: 10px;
+      overflow: hidden;
     }
+
     #audioLevelIndicator {
       height: 100%;
       background-color: green;
       width: 0;
       transition: width 0.1s;
     }
+
     #peakLine {
       position: absolute;
       top: 0;
       height: 100%;
       width: 2px;
       background-color: yellow;
+      transition: left 0.1s;
+    }
+
+    /* Ensure all interactive elements are above the canvas */
+    button, input, #closePopup, #confidenceLevel, #captions {
+      position: relative;
+      z-index: 1002;
     }
   </style>
   <!-- Load Local Files -->
@@ -217,7 +298,7 @@
   </a>
   <div id="controlPopup">
     <button id="closePopup">✖</button>
-    <div>
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
       <button id="switchCamera">🔄</button>
       <button id="toggleCaptions">💬</button>
     </div>
@@ -230,7 +311,7 @@
     </div>
     <input type="range" id="gainSlider" min="0.1" max="10.0" step="0.1" value="4.0">
     <button id="confirmPopup">Save</button>
-    <small>v91b</small>
+    <small>v91a</small>
   </div>
   <div id="captions"></div>
   <div id="confidenceLevel">90%</div>
