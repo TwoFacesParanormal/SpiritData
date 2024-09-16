@@ -7,9 +7,9 @@ let usingFrontCamera = false;
 let recognizing = false;
 let speechRecognizer;
 let captionsDiv;
-let captionsLines = [];
+let captionsLines = []; // Array to hold lines of captions
 let confidenceLevel = 0.9;
-let gainValue = 4.0;
+let gainValue = 4.0; // Default gain value
 let audioContext;
 let gainNode;
 let mediaStreamSource;
@@ -17,18 +17,17 @@ let analyser;
 let dataArray;
 let peakValue = 0;
 let peakTimestamp = 0;
-let maxLines = 14;
-let videoWidth, videoHeight;
+
+let maxLines = 14; // Maximum number of lines to display
 
 function setup() {
-  pixelDensity(1); // Ensure consistent rendering
+  pixelDensity(1);
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.position(0, 0);
   canvas.style('z-index', '2');
 
   setupCamera();
 
-  // Initialize UI elements
   const confidenceDisplay = select('#confidenceLevel');
   confidenceDisplay.mousePressed(toggleControlPopup);
 
@@ -42,9 +41,9 @@ function setup() {
   confidenceSlider.input(updateSliderValue);
 
   const gainSlider = select('#gainSlider');
-  gainSlider.attribute('min', 0.1);
-  gainSlider.attribute('max', 10);
-  gainSlider.value(gainValue);
+  gainSlider.attribute('min', 0.1); // Ensure minimum value is 0.1
+  gainSlider.attribute('max', 10); // Set the maximum value of the gain slider to 10
+  gainSlider.value(gainValue); // Set the default value to 4
   gainSlider.input(updateGainValue);
 
   const confirmPopupButton = select('#confirmPopup');
@@ -54,21 +53,18 @@ function setup() {
   closePopupButton.mousePressed(hideControlPopup);
 
   captionsDiv = select('#captions');
-  captionsDiv.mousePressed(hideCaptions);
+  captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
 
   loadSettings();
   startSpeechRecognition();
   hideControlPopup();
-
-  // Handle window resize and orientation change
-  windowResized();
 }
 
 function setupCamera() {
   if (currentStream) {
     currentStream.getTracks().forEach(track => track.stop());
   }
-
+  
   let constraints;
 
   if (window.innerHeight > window.innerWidth) {
@@ -76,7 +72,7 @@ function setupCamera() {
     constraints = {
       video: {
         facingMode: usingFrontCamera ? 'user' : 'environment',
-        width: { ideal: 720 },
+        width: { ideal: 720 }, // Adjust as needed
         height: { ideal: 1280 }
       },
       audio: false
@@ -103,7 +99,7 @@ function setupCamera() {
       outputStride: 16,
       inputResolution: 256,
       multiplier: 0.75
-    }, modelReady);
+    }, modelReady);    
 
     poseNet.on("pose", function(results) {
       poses = results;
@@ -111,6 +107,7 @@ function setupCamera() {
       poseHistory = poseHistory.filter(entry => millis() - entry.timestamp <= 2000);
     });
 
+    // Append the video element to the container
     document.getElementById('videoContainer').appendChild(video.elt);
   });
 
@@ -122,13 +119,21 @@ function windowResized() {
   setupCamera();
 }
 
+window.addEventListener('orientationchange', function() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    resizeCanvas(windowWidth, windowHeight);
+    setupCamera();
+  }, 300); // Delay to allow the orientation change to complete
+});
+
 function switchCamera() {
   usingFrontCamera = !usingFrontCamera;
   setupCamera();
 }
 
 function modelReady() {
-  console.log("PoseNet Model Ready");
+  console.log("Model Ready");
 }
 
 function draw() {
@@ -137,13 +142,14 @@ function draw() {
   let videoAspect = video.width / video.height;
   let canvasAspect = width / height;
 
+  let videoWidth, videoHeight;
+
   if (window.innerHeight > window.innerWidth) {
     // Portrait Mode: Rotate the canvas
     push();
     translate(width / 2, height / 2);
     rotate(PI / 2); // Rotate 90 degrees
-
-    // After rotation, width and height are swapped
+    // After rotation, the width and height are swapped
     if (canvasAspect > videoAspect) {
       videoHeight = width * videoAspect;
       videoWidth = width;
@@ -151,14 +157,9 @@ function draw() {
       videoWidth = height / videoAspect;
       videoHeight = height;
     }
-
     // Draw the video with swapped dimensions
     image(video, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
     pop();
-
-    // Draw keypoints and skeletons adjusted for rotation
-    drawKeypointsRotated();
-    drawSkeletonsRotated();
   } else {
     // Landscape Mode: Draw normally
     if (canvasAspect > videoAspect) {
@@ -173,41 +174,20 @@ function draw() {
     let y = (height - videoHeight) / 2;
 
     image(video, x, y, videoWidth, videoHeight);
+  }
 
-    // Draw keypoints and skeletons normally
-    drawKeypoints(x, y, videoWidth, videoHeight);
-    drawSkeletons(x, y, videoWidth, videoHeight);
+  // Draw keypoints and skeletons
+  if (window.innerHeight > window.innerWidth) {
+    // Adjust keypoints for rotated video
+    drawKeypointsRotated();
+    drawSkeletonsRotated();
+  } else {
+    drawKeypoints(0, 0, videoWidth, videoHeight);
+    drawSkeletons(0, 0, videoWidth, videoHeight);
   }
 
   if (isVuMeterVisible()) {
     updateVuMeter();
-  }
-}
-
-function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
-  for (let historyEntry of poseHistory) {
-    let ageFactor = (millis() - historyEntry.timestamp) / 2000;
-    for (let i = 0; i < historyEntry.poses.length; i++) {
-      const pose = historyEntry.poses[i].pose;
-      for (let j = 0; j < pose.keypoints.length; j++) {
-        const keypoint = pose.keypoints[j];
-        if (keypoint.score > confidenceLevel) {
-          let x = map(keypoint.position.x, 0, video.width, xOffset, xOffset + videoWidth);
-          let y = map(keypoint.position.y, 0, video.height, yOffset, yOffset + videoHeight);
-          if (keypoint.part === 'leftEye' || keypoint.part === 'rightEye') {
-            drawEye(x, y, ageFactor);
-          } else if (keypoint.part === 'nose') {
-            drawNose(x, y, ageFactor);
-          } else if (keypoint.part === 'leftEar' || keypoint.part === 'rightEar') {
-            drawEar(x, y, ageFactor);
-          } else {
-            fill(255, 0, 0);
-            noStroke();
-            ellipse(x, y, 5, 5);
-          }
-        }
-      }
-    }
   }
 }
 
@@ -239,26 +219,6 @@ function drawKeypointsRotated() {
             ellipse(rotatedX, rotatedY, 5, 5);
           }
         }
-      }
-    }
-  }
-}
-
-function drawSkeletons(xOffset, yOffset, videoWidth, videoHeight) {
-  for (let historyEntry of poseHistory) {
-    let ageFactor = (millis() - historyEntry.timestamp) / 2000;
-    for (let i = 0; i < historyEntry.poses.length; i++) {
-      const skeleton = historyEntry.poses[i].skeleton;
-      let baseColor = getBaseColor(i);
-      for (let j = 0; j < skeleton.length; j++) {
-        const partA = skeleton[j][0];
-        const partB = skeleton[j][1];
-        let x1 = map(partA.position.x, 0, video.width, xOffset, xOffset + videoWidth);
-        let y1 = map(partA.position.y, 0, video.height, yOffset, yOffset + videoHeight);
-        let x2 = map(partB.position.x, 0, video.width, xOffset, xOffset + videoWidth);
-        let y2 = map(partB.position.y, 0, video.height, yOffset, yOffset + videoHeight);
-        stroke(lerpColor(baseColor, color(0, 0, 0), ageFactor));
-        line(x1, y1, x2, y2);
       }
     }
   }

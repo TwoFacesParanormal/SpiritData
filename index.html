@@ -16,23 +16,22 @@
       cursor: pointer;
     }
     canvas {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      /* object-fit: cover; */ /* Removed to prevent CSS scaling conflicts */
-      transition: transform 0.3s ease;
-    }
-    #videoContainer {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: absolute; /* Changed to absolute for better control */
-      top: 0;
-      left: 0;
-    }
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+#videoContainer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute; /* Ensures it covers the entire screen */
+  top: 0;
+  left: 0;
+}
     #controlPopup {
       display: none; 
       position: absolute;
@@ -130,6 +129,16 @@
       border-radius: 5px;
       box-sizing: border-box;
     }
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
     #confidenceSlider, #gainSlider {
       -webkit-appearance: none;
       appearance: none;
@@ -198,7 +207,6 @@
   <script src="p5.min.js"></script>
   <script src="p5.dom.min.js"></script>
   <script src="ml5.min.js"></script>
-  <!-- Inline setup script removed as it's now in sketch.js -->
 </head>
 <body>
   <div id="videoContainer">
