@@ -19,21 +19,14 @@ let peakValue = 0;
 let peakTimestamp = 0;
 
 let maxLines = 14; // Maximum number of lines to display
-let videoWidth, videoHeight;
-let resizeTimeout;
-
-// Variables to handle rotated keypoints and skeletons
-let isPortrait = false;
 
 function setup() {
-  pixelDensity(1); // Ensure consistent rendering
+  pixelDensity(1);
   let canvas = createCanvas(windowWidth, windowHeight);
   canvas.position(0, 0);
-  canvas.style('z-index', '2');
 
   setupCamera();
 
-  // Initialize UI elements
   const confidenceDisplay = select('#confidenceLevel');
   confidenceDisplay.mousePressed(toggleControlPopup);
 
@@ -61,17 +54,9 @@ function setup() {
   captionsDiv = select('#captions');
   captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
 
-  // Load settings from local storage
   loadSettings();
-
-  // Enable text recognition by default
   startSpeechRecognition();
-
-  // Hide the control popup initially
   hideControlPopup();
-
-  // Handle window resize and orientation change
-  windowResized();
 }
 
 function setupCamera() {
@@ -82,19 +67,17 @@ function setupCamera() {
   let constraints;
 
   if (window.innerHeight > window.innerWidth) {
-    // Portrait mode
-    isPortrait = true;
+    // Portrait mode: Higher height than width
     constraints = {
       video: {
         facingMode: usingFrontCamera ? 'user' : 'environment',
-        width: { ideal: 720 },
+        width: { ideal: 720 }, // Adjust as needed
         height: { ideal: 1280 }
       },
       audio: false
     };
   } else {
-    // Landscape mode
-    isPortrait = false;
+    // Landscape mode: Higher width than height
     constraints = {
       video: {
         facingMode: usingFrontCamera ? 'user' : 'environment',
@@ -115,7 +98,7 @@ function setupCamera() {
       outputStride: 16,
       inputResolution: 256,
       multiplier: 0.75
-    }, modelReady);
+    }, modelReady);    
 
     poseNet.on("pose", function(results) {
       poses = results;
@@ -124,10 +107,7 @@ function setupCamera() {
     });
 
     // Append the video element to the container
-    let videoContainer = document.getElementById('videoContainer');
-    if (videoContainer && !videoContainer.contains(video.elt)) {
-      videoContainer.appendChild(video.elt);
-    }
+    document.getElementById('videoContainer').appendChild(video.elt);
   });
 
   video.elt.setAttribute('playsinline', 'true');
@@ -135,11 +115,16 @@ function setupCamera() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  setupCamera();
+}
+
+window.addEventListener('orientationchange', function() {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
+    resizeCanvas(windowWidth, windowHeight);
     setupCamera();
   }, 300); // Delay to allow the orientation change to complete
-}
+});
 
 function switchCamera() {
   usingFrontCamera = !usingFrontCamera;
@@ -147,7 +132,7 @@ function switchCamera() {
 }
 
 function modelReady() {
-  console.log("PoseNet Model Ready");
+  console.log("Model Ready");
 }
 
 function draw() {
@@ -156,13 +141,14 @@ function draw() {
   let videoAspect = video.width / video.height;
   let canvasAspect = width / height;
 
-  if (isPortrait) {
+  let videoWidth, videoHeight;
+
+  if (window.innerHeight > window.innerWidth) {
     // Portrait Mode: Rotate the canvas
     push();
     translate(width / 2, height / 2);
     rotate(PI / 2); // Rotate 90 degrees
-
-    // After rotation, width and height are swapped
+    // After rotation, the width and height are swapped
     if (canvasAspect > videoAspect) {
       videoHeight = width * videoAspect;
       videoWidth = width;
@@ -170,14 +156,9 @@ function draw() {
       videoWidth = height / videoAspect;
       videoHeight = height;
     }
-
     // Draw the video with swapped dimensions
     image(video, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
     pop();
-
-    // Draw keypoints and skeletons adjusted for rotation
-    drawKeypointsRotated();
-    drawSkeletonsRotated();
   } else {
     // Landscape Mode: Draw normally
     if (canvasAspect > videoAspect) {
@@ -192,41 +173,20 @@ function draw() {
     let y = (height - videoHeight) / 2;
 
     image(video, x, y, videoWidth, videoHeight);
+  }
 
-    // Draw keypoints and skeletons normally
-    drawKeypoints(x, y, videoWidth, videoHeight);
-    drawSkeletons(x, y, videoWidth, videoHeight);
+  // Draw keypoints and skeletons
+  if (window.innerHeight > window.innerWidth) {
+    // Adjust keypoints for rotated video
+    drawKeypointsRotated();
+    drawSkeletonsRotated();
+  } else {
+    drawKeypoints(0, 0, videoWidth, videoHeight);
+    drawSkeletons(0, 0, videoWidth, videoHeight);
   }
 
   if (isVuMeterVisible()) {
     updateVuMeter();
-  }
-}
-
-function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
-  for (let historyEntry of poseHistory) {
-    let ageFactor = (millis() - historyEntry.timestamp) / 2000;
-    for (let i = 0; i < historyEntry.poses.length; i++) {
-      const pose = historyEntry.poses[i].pose;
-      for (let j = 0; j < pose.keypoints.length; j++) {
-        const keypoint = pose.keypoints[j];
-        if (keypoint.score > confidenceLevel) {
-          let x = map(keypoint.position.x, 0, video.width, xOffset, xOffset + videoWidth);
-          let y = map(keypoint.position.y, 0, video.height, yOffset, yOffset + videoHeight);
-          if (keypoint.part === 'leftEye' || keypoint.part === 'rightEye') {
-            drawEye(x, y, ageFactor);
-          } else if (keypoint.part === 'nose') {
-            drawNose(x, y, ageFactor);
-          } else if (keypoint.part === 'leftEar' || keypoint.part === 'rightEar') {
-            drawEar(x, y, ageFactor);
-          } else {
-            fill(255, 0, 0);
-            noStroke();
-            ellipse(x, y, 5, 5);
-          }
-        }
-      }
-    }
   }
 }
 
@@ -241,8 +201,8 @@ function drawKeypointsRotated() {
           // Rotate keypoint positions by 90 degrees
           let rotatedX = keypoint.position.y;
           let rotatedY = video.width - keypoint.position.x;
-
-          // Map to canvas coordinates after rotation
+          
+          // Map to canvas coordinates
           rotatedX = map(rotatedX, 0, video.width, (height - videoHeight) / 2, (height + videoHeight) / 2);
           rotatedY = map(rotatedY, 0, video.height, (width - videoWidth) / 2, (width + videoWidth) / 2);
 
@@ -258,26 +218,6 @@ function drawKeypointsRotated() {
             ellipse(rotatedX, rotatedY, 5, 5);
           }
         }
-      }
-    }
-  }
-}
-
-function drawSkeletons(xOffset, yOffset, videoWidth, videoHeight) {
-  for (let historyEntry of poseHistory) {
-    let ageFactor = (millis() - historyEntry.timestamp) / 2000;
-    for (let i = 0; i < historyEntry.poses.length; i++) {
-      const skeleton = historyEntry.poses[i].skeleton;
-      let baseColor = getBaseColor(i);
-      for (let j = 0; j < skeleton.length; j++) {
-        const partA = skeleton[j][0];
-        const partB = skeleton[j][1];
-        let x1 = map(partA.position.x, 0, video.width, xOffset, xOffset + videoWidth);
-        let y1 = map(partA.position.y, 0, video.height, yOffset, yOffset + videoHeight);
-        let x2 = map(partB.position.x, 0, video.width, xOffset, xOffset + videoWidth);
-        let y2 = map(partB.position.y, 0, video.height, yOffset, yOffset + videoHeight);
-        stroke(lerpColor(baseColor, color(0, 0, 0), ageFactor));
-        line(x1, y1, x2, y2);
       }
     }
   }
@@ -312,9 +252,58 @@ function drawSkeletonsRotated() {
   }
 }
 
+function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
+  for (let historyEntry of poseHistory) {
+    let ageFactor = (millis() - historyEntry.timestamp) / 2000;
+    for (let i = 0; i < historyEntry.poses.length; i++) {
+      const pose = historyEntry.poses[i].pose;
+      for (let j = 0; j < pose.keypoints.length; j++) {
+        const keypoint = pose.keypoints[j];
+        if (keypoint.score > confidenceLevel) {
+          let x = map(keypoint.position.x, 0, video.width, xOffset, xOffset + videoWidth);
+          let y = map(keypoint.position.y, 0, video.height, yOffset, yOffset + videoHeight);
+          if (keypoint.part === 'leftEye' || keypoint.part === 'rightEye') {
+            drawEye(x, y, ageFactor);
+          } else
+          if (keypoint.part === 'nose') {
+            drawNose(x, y, ageFactor);
+          } else
+          if (keypoint.part === 'leftEar' || keypoint.part === 'rightEar') {
+            drawEar(x, y, ageFactor);
+          } else {
+            fill(255, 0, 0);
+            noStroke();
+            ellipse(x, y, 5, 5);
+          }
+        }
+      }
+    }
+  }
+}
+
+function drawSkeletons() {
+  for (let historyEntry of poseHistory) {
+    let ageFactor = (millis() - historyEntry.timestamp) / 2000;
+    for (let i = 0; i < historyEntry.poses.length; i++) {
+      const skeleton = historyEntry.poses[i].skeleton;
+      let baseColor = getBaseColor(i);
+      for (let j = 0; j < skeleton.length; j++) {
+        const partA = skeleton[j][0];
+        const partB = skeleton[j][1];
+        let x1 = map(partA.position.x, 0, video.width, 0, width);
+        let y1 = map(partA.position.y, 0, video.height, 0, height);
+        let x2 = map(partB.position.x, 0, video.width, 0, width);
+        let y2 = map(partB.position.y, 0, video.height, 0, height);
+        stroke(lerpColor(baseColor, color(0, 0, 0), ageFactor));
+        line(x1, y1, x2, y2);
+      }
+    }
+  }
+}
+
 function isVuMeterVisible() {
-  const controlPopup = select('#controlPopup');
-  return controlPopup.style('display') !== 'none';
+  const controlPopup = document.getElementById('controlPopup');
+  return controlPopup.style.display !== 'none';
 }
 
 function getBaseColor(index) {
@@ -466,8 +455,7 @@ function updateCaptions() {
     lineElement.style('margin', '0');
     lineElement.style('padding', '0');
     lineElement.style('opacity', (1 - (opacityStep * (maxLines - index))).toFixed(2));
-    lineElement.style('font-size', '14px');
-    lineElement.parent(captionsDiv);
+    captionsDiv.child(lineElement);
   });
 
   captionsDiv.style('white-space', 'normal'); // Allow captions to wrap to multiple lines if needed
@@ -498,7 +486,7 @@ function confirmPopup() {
   confidenceLevel = slider.value() / 100;
   updateConfidenceLevel();
   saveSettings();
-  // No need to reload the page; adjust pose history or other parameters if necessary
+  location.reload();  // Force refresh to clear any issues
 }
 
 function updateConfidenceLevel() {
@@ -508,7 +496,7 @@ function updateConfidenceLevel() {
 
 function toggleControlPopup() {
   let controlPopup = select('#controlPopup');
-  if (controlPopup.style('display') === 'none' || controlPopup.style('display') === '') {
+  if (controlPopup.style('display') === 'none') {
     showControlPopup();
   } else {
     hideControlPopup();
