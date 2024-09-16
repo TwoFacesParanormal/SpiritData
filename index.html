@@ -48,21 +48,22 @@
       cursor: pointer;
     }
     canvas {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    #videoContainer {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: relative;
-    }
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+#videoContainer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute; /* Ensures it covers the entire screen */
+  top: 0;
+  left: 0;
+}
     #controlPopup {
       display: none; 
       position: absolute;
