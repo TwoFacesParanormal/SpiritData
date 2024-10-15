@@ -21,9 +21,7 @@ let peakTimestamp = 0;
 let maxLines = 14; // Maximum number of lines to display
 
 function setup() {
-  let canvas = createCanvas(windowWidth, windowHeight);
-  canvas.position(0, 0);
-
+  createCanvas(windowWidth, windowHeight + 50); // Added extra height
   setupCamera();
 
   const confidenceDisplay = select('#confidenceLevel');
@@ -39,9 +37,9 @@ function setup() {
   confidenceSlider.input(updateSliderValue);
 
   const gainSlider = select('#gainSlider');
-  gainSlider.attribute('min', 0.1); // Ensure minimum value is 0.1
-  gainSlider.attribute('max', 10); // Set the maximum value of the gain slider to 10
-  gainSlider.value(gainValue); // Set the default value to 4
+  gainSlider.attribute('min', 0.1);
+  gainSlider.attribute('max', 10);
+  gainSlider.value(gainValue);
   gainSlider.input(updateGainValue);
 
   const confirmPopupButton = select('#confirmPopup');
@@ -51,7 +49,7 @@ function setup() {
   closePopupButton.mousePressed(hideControlPopup);
 
   captionsDiv = select('#captions');
-  captionsDiv.mousePressed(hideCaptions); // Add this line to hide captions on tap
+  captionsDiv.mousePressed(hideCaptions);
 
   // Load settings from local storage
   loadSettings();
@@ -61,6 +59,24 @@ function setup() {
 
   // Hide the control popup initially
   hideControlPopup();
+
+  // Listen for visual viewport changes
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', viewportResized);
+  }
+
+  // Reload the page on orientation change to fix pose alignment
+  window.addEventListener('orientationchange', function() {
+    window.location.reload();
+  });
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight + 50); // Added extra height
+}
+
+function viewportResized() {
+  resizeCanvas(windowWidth, windowHeight + 50); // Added extra height
 }
 
 function setupCamera() {
@@ -71,31 +87,55 @@ function setupCamera() {
   let constraints = {
     video: {
       facingMode: usingFrontCamera ? 'user' : 'environment',
-      width: { ideal: windowWidth },
-      height: { ideal: windowHeight }
+      width: { ideal: 1280 },
+      height: { ideal: 720 }
     },
     audio: false
   };
 
-  video = createCapture(constraints, function(stream) {
-    currentStream = stream;
-    video.size(windowWidth, windowHeight);
-    video.hide();
-
-    poseNet = ml5.poseNet(video, modelReady);
-    poseNet.on("pose", function(results) {
-      poses = results;
-      poseHistory.push({poses: results, timestamp: millis()});
-      poseHistory = poseHistory.filter(entry => millis() - entry.timestamp <= 2000);
-    });
-  });
-
+  video = createCapture(constraints);
+  video.hide();
   video.elt.setAttribute('playsinline', 'true');
-  video.elt.style.objectFit = 'cover';
+
+  video.elt.onloadedmetadata = function() {
+    video.loadedmetadata = true;
+    currentStream = video.elt.srcObject;
+
+    // Initialize PoseNet after the video is ready
+    poseNet = ml5.poseNet(video, modelReady);
+    poseNet.on('pose', poseEventHandler);
+
+    // Log video dimensions for debugging
+    console.log('Video width:', video.width);
+    console.log('Video height:', video.height);
+  };
+}
+
+function poseEventHandler(results) {
+  poses = results;
+  poseHistory.push({ poses: results, timestamp: millis() });
+  poseHistory = poseHistory.filter(entry => millis() - entry.timestamp <= 2000);
 }
 
 function switchCamera() {
   usingFrontCamera = !usingFrontCamera;
+
+  // Stop current video stream
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
+
+  // Remove old PoseNet instance
+  if (poseNet) {
+    poseNet.removeListener('pose', poseEventHandler);
+    poseNet = null;
+  }
+
+  // Remove old video element
+  if (video && video.remove) {
+    video.remove();
+  }
+
   setupCamera();
 }
 
@@ -106,30 +146,51 @@ function modelReady() {
 function draw() {
   background(0);
 
-  let videoAspect = video.width / video.height;
-  let canvasAspect = width / height;
+  // Ensure the video metadata is loaded
+  if (video.loadedmetadata) {
+    // Update video.width and video.height
+    video.width = video.elt.videoWidth;
+    video.height = video.elt.videoHeight;
 
-  let videoWidth, videoHeight;
+    let videoAspect = video.width / video.height;
+    let canvasAspect = width / height;
 
-  if (canvasAspect > videoAspect) {
-    videoWidth = height * videoAspect;
-    videoHeight = height;
-  } else {
-    videoWidth = width;
-    videoHeight = width / videoAspect;
+    let videoWidth, videoHeight;
+
+    if (canvasAspect > videoAspect) {
+      // Canvas is wider than video
+      videoHeight = height;
+      videoWidth = videoHeight * videoAspect;
+    } else {
+      // Canvas is taller than video
+      videoWidth = width;
+      videoHeight = videoWidth / videoAspect;
+    }
+
+    // Adjust video size in landscape mode
+    if (windowWidth > windowHeight) {
+      let extraHeight = 50; // Amount of extra height added
+      videoHeight += extraHeight;
+      videoWidth = videoHeight * videoAspect;
+    }
+
+    let x = (width - videoWidth) / 2;
+    let y = (height - videoHeight) / 2;
+
+    // Draw the video on the canvas
+    image(video, x, y, videoWidth, videoHeight);
+
+    // Draw keypoints and skeletons
+    drawKeypoints(x, y, videoWidth, videoHeight);
+    drawSkeletons(x, y, videoWidth, videoHeight);
   }
 
-  let x = (width - videoWidth) / 2;
-  let y = (height - videoHeight) / 2;
-
-  image(video, x, y, videoWidth, videoHeight);
-
-  drawKeypoints();
-  drawSkeletons();
-  updateVuMeter();
+  if (isVuMeterVisible()) {
+    updateVuMeter();
+  }
 }
 
-function drawKeypoints() {
+function drawKeypoints(xOffset, yOffset, videoWidth, videoHeight) {
   for (let historyEntry of poseHistory) {
     let ageFactor = (millis() - historyEntry.timestamp) / 2000;
     for (let i = 0; i < historyEntry.poses.length; i++) {
@@ -137,20 +198,18 @@ function drawKeypoints() {
       for (let j = 0; j < pose.keypoints.length; j++) {
         const keypoint = pose.keypoints[j];
         if (keypoint.score > confidenceLevel) {
-          let x = map(keypoint.position.x, 0, video.width, 0, width);
-          let y = map(keypoint.position.y, 0, video.height, 0, height);
-          fill(255, 0, 0);
-          noStroke();
-          ellipse(x, y, 10, 10);
-          
+          let x = map(keypoint.position.x, 0, video.width, xOffset, xOffset + videoWidth);
+          let y = map(keypoint.position.y, 0, video.height, yOffset, yOffset + videoHeight);
           if (keypoint.part === 'leftEye' || keypoint.part === 'rightEye') {
             drawEye(x, y, ageFactor);
-          }
-          if (keypoint.part === 'nose') {
+          } else if (keypoint.part === 'nose') {
             drawNose(x, y, ageFactor);
-          }
-          if (keypoint.part === 'leftEar' || keypoint.part === 'rightEar') {
+          } else if (keypoint.part === 'leftEar' || keypoint.part === 'rightEar') {
             drawEar(x, y, ageFactor);
+          } else {
+            fill(255, 0, 0);
+            noStroke();
+            ellipse(x, y, 5, 5);
           }
         }
       }
@@ -158,7 +217,7 @@ function drawKeypoints() {
   }
 }
 
-function drawSkeletons() {
+function drawSkeletons(xOffset, yOffset, videoWidth, videoHeight) {
   for (let historyEntry of poseHistory) {
     let ageFactor = (millis() - historyEntry.timestamp) / 2000;
     for (let i = 0; i < historyEntry.poses.length; i++) {
@@ -167,15 +226,20 @@ function drawSkeletons() {
       for (let j = 0; j < skeleton.length; j++) {
         const partA = skeleton[j][0];
         const partB = skeleton[j][1];
-        let x1 = map(partA.position.x, 0, video.width, 0, width);
-        let y1 = map(partA.position.y, 0, video.height, 0, height);
-        let x2 = map(partB.position.x, 0, video.width, 0, width);
-        let y2 = map(partB.position.y, 0, video.height, 0, height);
+        let x1 = map(partA.position.x, 0, video.width, xOffset, xOffset + videoWidth);
+        let y1 = map(partA.position.y, 0, video.height, yOffset, yOffset + videoHeight);
+        let x2 = map(partB.position.x, 0, video.width, xOffset, xOffset + videoWidth);
+        let y2 = map(partB.position.y, 0, video.height, yOffset, yOffset + videoHeight);
         stroke(lerpColor(baseColor, color(0, 0, 0), ageFactor));
         line(x1, y1, x2, y2);
       }
     }
   }
+}
+
+function isVuMeterVisible() {
+  const controlPopup = document.getElementById('controlPopup');
+  return controlPopup.style.display !== 'none';
 }
 
 function getBaseColor(index) {
@@ -238,6 +302,7 @@ function startSpeechRecognition() {
 
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
       mediaStreamSource = audioContext.createMediaStreamSource(stream);
+      gainNode.gain.value = gainValue; // Ensure gain is set correctly
       mediaStreamSource.connect(gainNode);
 
       // Set up the analyser node
@@ -358,7 +423,7 @@ function confirmPopup() {
   confidenceLevel = slider.value() / 100;
   updateConfidenceLevel();
   saveSettings();
-  location.reload();  // Force refresh to clear any issues
+  hideControlPopup(); // Hide the popup after saving
 }
 
 function updateConfidenceLevel() {
@@ -381,10 +446,14 @@ function showControlPopup() {
   select('#gainSlider').value(gainValue);
   select('#popupGainLevel').html(gainValue.toFixed(1));
   select('#controlPopup').style('display', 'flex');
+  // Disable pointer events on the canvas
+  select('canvas').style('pointer-events', 'none');
 }
 
 function hideControlPopup() {
   select('#controlPopup').style('display', 'none');
+  // Enable pointer events on the canvas
+  select('canvas').style('pointer-events', 'auto');
 }
 
 function saveSettings() {
