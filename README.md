@@ -3,11 +3,12 @@
 <head>
 </head>
 <body>
-    <h1>Two Faces Paranormal SpiritData App v0.89</h1>
+    <h1>Two Faces Paranormal SpiritData App v100</h1>
     <h2>Pose Finder with Speech Recognition</h2>
-    <h3>Stick figures and eyes will be drawn over detected figures and faces. Words heard on the mic will appear written below. Please allow mic and camera permission. Hold your phone sideways, landscape mode works much better. Beta test pre-release.</h3>
-    <a href="https://twofacesparanormal.github.io/SpiritData/" class="button">Latest Test</a> | 
-    <a href="https://twofacesparanormal.com/sd/" class="button">Stable on Our Server</a>
+    <h3>Stick figures and eyes will be drawn over detected figures and faces. Words heard on the mic will appear written below. Please allow mic and camera permission.
+        <br>This is the first complete release, but still barely out of beta status, designed primarily for newer iPhones and Safari.</h3>
+    <a href="https://twofacesparanormal.github.io/SpiritData/" class="button">Github Hosted Version</a> | 
+    <a href="https://twofacesparanormal.com/sd/" class="button">Stable Version on Our Server</a>
     <br><br>
 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Code Provided Under Creative Commons License CC BY-NC-SA 4.0 Attribution-NonCommercial-ShareAlike 4.0 International</a>
 
