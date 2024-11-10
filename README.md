@@ -11,8 +11,18 @@
     <a href="https://twofacesparanormal.com/sd/" class="button">Stable Version on Our Server</a>
     <br><br>
 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Code Provided Under Creative Commons License CC BY-NC-SA 4.0 Attribution-NonCommercial-ShareAlike 4.0 International</a>
+<p></p><p>
+Unique features: 
 
-   <p></p> Two Faces Paranormal makes no claims as to the presence, validity or origin of any sensor reading. Sensor
+* Detect human faces, not just bodies. 
+
+* Detected figures persist on-screen for several seconds, so quick appearances remain visible. 
+
+* EVPs show as text on-screen, along with any dialog heard by a built-in  AI caption generator which prints all nearby spoken words below the live video feed.
+
+Pareidolia and confirmation bias are removed from the equation, leaving only equitable unbiased machine learning to detect what the human eye does not see or hear, with cold calculated unequivocal scientific unambiguity. 
+   </p>
+   <p> Two Faces Paranormal makes no claims as to the presence, validity or origin of any sensor reading. Sensor
 data interpretation is at the sole discretion of the user. Amusement purposes only. Specifications subject to
 change without notice.</p>
 <p>The SpiritData app is provided without any expectation, and to be considered experimental. No claim is
