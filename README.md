@@ -4,9 +4,15 @@
 </head>
 <body>
     <h1>Two Faces Paranormal SpiritData App v100</h1>
-    <h2>Pose Finder with Speech Recognition</h2>
-    <h3>Stick figures and eyes will be drawn over detected figures and faces. Words heard on the mic will appear written below. Please allow mic and camera permission.
-        <br>This is the first complete release, but still barely out of beta status, designed primarily for newer iPhones and Safari.</h3>
+    <h2>SLS+EVP Paranormal Multitool</h2>
+<h3>
+3 methods for detecting and visualizing spirit activity:<br>
+• SLS-like body-tracking<br>
+• Face detection<br>
+• EVP-interpreting speech recognition text captions on-screen.<br><br>
+The world's first paranormal science tool suite to be available as a web-based browser app. Featuring SLS-like video human-figure-detection and on-screen speech-recognition text for deciphering potential EVPs.</h3>
+    <h4>Stick figures and eyes will be drawn over detected figures and faces. Words heard on the mic will appear written below. Please allow mic and camera permission.
+        </h4>
     <a href="https://twofacesparanormal.github.io/SpiritData/" class="button">Github Hosted Version</a> | 
     <a href="https://twofacesparanormal.com/sd/" class="button">Stable Version on Our Server</a>
     <br><br>
