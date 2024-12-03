@@ -28,6 +28,9 @@ Unique features:
 
 Pareidolia and confirmation bias are removed from the equation, leaving only equitable unbiased machine learning to detect what the human eye does not see or hear, with cold calculated unequivocal scientific unambiguity. 
    </p>
+
+<h3>The SpiritData Pro app will soon be in the Apple App Store with only slightly different native speech recognition code.</h3>
+   
    <p> Two Faces Paranormal makes no claims as to the presence, validity or origin of any sensor reading. Sensor
 data interpretation is at the sole discretion of the user. Amusement purposes only. Specifications subject to
 change without notice.</p>
