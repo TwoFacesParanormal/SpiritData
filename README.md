@@ -36,7 +36,7 @@ data interpretation is at the sole discretion of the user. Amusement purposes on
 change without notice.</p>
 <p>The SpiritData app is provided without any expectation, and to be considered experimental. No claim is
 made to the validity of the data received by these devices. Suggested use cases do not constitute a claim that
-any result is guaranteed. No claim is made as to Spirit communications, Aliens, Ghosts or any other type of
+any result is guaranteed. No claim is made as to spirit communications, aliens, ghosts or any other type of
 phenomena. The user agrees not to expose children to this device, or any person who may be harmed or
 damaged by exposure to this device. You must be over 18 and in sound mental condition to use this device. As
 the owner of this device you are responsible for the device’s use and responsible for the safety of others who
