@@ -1,46 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-</head>
-<body>
-    <h1>Two Faces Paranormal SpiritData App v100</h1>
-    <h2>SLS+EVP Paranormal Multitool</h2>
-<h3>
-3 methods for detecting and visualizing spirit activity:<br>
-• SLS-like body-tracking<br>
-• Face detection<br>
-• EVP-interpreting speech recognition text captions on-screen.<br><br>
-The world's first paranormal science tool suite to be available as a web-based browser app. Featuring SLS-like video human-figure-detection and on-screen speech-recognition text for deciphering potential EVPs.</h3>
-    <h4>Stick figures and eyes will be drawn over detected figures and faces. Words heard on the mic will appear written below. Please allow mic and camera permission.
-        </h4>
-    <a href="https://twofacesparanormal.github.io/SpiritData/" class="button">Github Hosted Version</a> | 
-    <a href="https://twofacesparanormal.com/sd/" class="button">Stable Version on Our Server</a>
-    <br><br>
-<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Code Provided Under Creative Commons License CC BY-NC-SA 4.0 Attribution-NonCommercial-ShareAlike 4.0 International</a>
-<p></p><p>
-Unique features: 
+# SpiritData
 
-* Detect human faces, not just bodies. 
+### SLS + EVP Paranormal Multitool
 
-* Detected figures persist on-screen for several seconds, so quick appearances remain visible. 
+[![Download on the App Store](https://i0.wp.com/twofacesparanormal.com/wp-content/uploads/2025/01/appleappstore.png?resize=550%2C165&ssl=1)](https://apps.apple.com/us/app/spiritdata-pro/id6738769817)  
+[![Get it on Google Play](https://i0.wp.com/twofacesparanormal.com/wp-content/uploads/2025/01/googleplay.png?resize=550%2C165&ssl=1)](https://play.google.com/store/apps/details?id=com.twofacesparanormal.pro)
 
-* EVPs show as text on-screen, along with any dialog heard by a built-in  AI caption generator which prints all nearby spoken words below the live video feed.
+---
 
-Pareidolia and confirmation bias are removed from the equation, leaving only equitable unbiased machine learning to detect what the human eye does not see or hear, with cold calculated unequivocal scientific unambiguity. 
-   </p>
+[START](https://twofacesparanormal.com/sd/) | [COMMUNITY](https://twofacespodcast.com/community/) | [HELP](https://twofacesparanormal.com/spiritdata-mobile-app-help/)
 
-<h3>The SpiritData Pro app will soon be in the Apple App Store with only slightly different native speech recognition code.</h3>
-   
-   <p> Two Faces Paranormal makes no claims as to the presence, validity or origin of any sensor reading. Sensor
-data interpretation is at the sole discretion of the user. Amusement purposes only. Specifications subject to
-change without notice.</p>
-<p>The SpiritData app is provided without any expectation, and to be considered experimental. No claim is
-made to the validity of the data received by these devices. Suggested use cases do not constitute a claim that
-any result is guaranteed. No claim is made as to spirit communications, aliens, ghosts or any other type of
-phenomena. The user agrees not to expose children to this device, or any person who may be harmed or
-damaged by exposure to this device. You must be over 18 and in sound mental condition to use this device. As
-the owner of this device you are responsible for the device’s use and responsible for the safety of others who
-may come in contact with this device. This device should not be used by children under the age of 18 or
-anyone with a history of mental illness.</p>
-</body>
-</html>
+---
+
+EVP speech-recognition paired with unique “persistent” SLS-style body and face detection.
+
+# Two Faces Paranormal SpiritData Web App v100
+
+## SLS + EVP Paranormal Multitool
+
+### Three ways to detect and visualize possible activity
+
+- **SLS-style body-tracking**  
+- **Face detection**  
+- **EVP-interpreting speech-recognition captions**
+
+The world’s first paranormal science tool suite available as a web-based browser app, featuring SLS-style human-figure detection and on-screen speech recognition that helps decipher potential EVPs.
+
+#### Usage
+
+Stick figures and eyes appear over detected bodies and faces. Words heard by the microphone show below the live video feed. Grant microphone and camera permissions when prompted.
+
+[GitHub-hosted version](https://twofacesparanormal.github.io/SpiritData/) | [Stable version on our server](https://twofacesparanormal.com/sd/)
+
+[Creative Commons — CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+---
+
+### Unique features
+
+* Detects faces as well as bodies  
+* Detected figures persist on-screen for several seconds, so quick appearances stay visible  
+* Captures EVPs and any nearby speech as on-screen text beneath the video feed  
+
+Pareidolia and confirmation bias are reduced by relying on machine-learning detection rather than human interpretation.
+
+### Coming soon
+
+The **SpiritData Pro** app will be available in the Apple App Store, using native speech-recognition code.
+
+---
+
+**Disclaimer**
+
+Two Faces Paranormal makes no claims regarding the presence, validity, or origin of any sensor reading. Sensor-data interpretation is solely at the user’s discretion. For entertainment purposes only. Specifications may change without notice.
+
+The SpiritData app is experimental. No guarantee is made regarding the validity of any data produced. No claims are made about spirit communication, aliens, ghosts, or other phenomena.
+
+Users must be 18 years or older and in sound mental condition. Do not allow children or individuals who may be harmed by exposure to this device to use it. The owner is responsible for safe usage by themselves and others.
