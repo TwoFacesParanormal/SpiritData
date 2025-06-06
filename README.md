@@ -43,10 +43,6 @@ Stick figures and eyes appear over detected bodies and faces. Words heard by the
 
 Pareidolia and confirmation bias are reduced by relying on machine-learning detection rather than human interpretation.
 
-### Coming soon
-
-The **SpiritData Pro** app will be available in the Apple App Store, using native speech-recognition code.
-
 ---
 
 **Disclaimer**
